@@ -50,6 +50,48 @@ main{max-width:1500px;margin:0 auto;padding:16px}
 .file a{min-height:44px;display:inline-flex;align-items:center;padding:0 16px;background:var(--ink);color:#fff;text-decoration:none;font:600 14px ui-monospace,Menlo,Consolas,monospace}
 .note{background:var(--paper);border:1px solid var(--line);border-left:0;padding:14px 16px;font-size:14px;line-height:1.55;max-width:760px}
 a{color:var(--accent-ink)}
+.quote{max-width:880px;display:flex;flex-direction:column;gap:18px}
+.card{background:var(--paper);border:1px solid var(--line);padding:14px 16px}
+.card h3{margin:0 0 4px;font:600 12px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.1em}
+.card>p{margin:0 0 10px;font-size:14px;line-height:1.5;color:var(--muted)}
+.card h4{margin:16px 0 0;font-size:14px}
+.tw{overflow-x:auto}
+table.cl{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+table.cl th{text-align:left;font:600 11px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;color:var(--muted);padding:6px 8px 6px 0;border-bottom:1px solid var(--line)}
+table.cl td{padding:8px 8px 8px 0;border-bottom:1px solid #E7E5E4;vertical-align:top}
+table.cl .n{text-align:right;white-space:nowrap}
+table.cl tfoot td{font-weight:700;border-bottom:0;border-top:2px solid var(--ink)}
+.qhead,.qrow{display:grid;grid-template-columns:1fr 72px 104px 92px 32px;gap:8px;align-items:center}
+.qhead{font:600 11px ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:6px}
+.qrow{padding:10px 0;border-bottom:1px solid #E7E5E4}
+.qd strong{display:block;font-size:15px}
+.qd small{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+.qrow label span{display:none}
+.qrow input,.qfield input,.qfield textarea{width:100%;min-height:44px;border:1px solid var(--line);background:#fff;color:var(--ink);font:16px system-ui,sans-serif;padding:8px 10px;border-radius:0}
+.qrow input:focus,.qfield input:focus,.qfield textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.qrow output{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.qx{min-width:32px;min-height:44px;border:0;background:none;color:var(--muted);font-size:22px;cursor:pointer}
+.qadd{margin-top:12px;width:100%;flex:none}
+.qtot{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:2px solid var(--ink)}
+.qtot strong{font-size:22px;font-variant-numeric:tabular-nums}
+.qtot small{color:var(--muted);font-size:13px}
+.qfield{display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px;margin-bottom:12px}
+.qfield textarea{min-height:80px;resize:vertical}
+.qbtns{display:flex;gap:8px;flex-wrap:wrap}
+.qbtns .btn{min-width:120px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+#qMsg{font-size:14px;color:var(--muted);min-height:1.4em;margin:8px 0 0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (max-width:600px){
+.qhead{display:none}
+.qrow{grid-template-columns:1fr 1fr 1fr;row-gap:6px}
+.qrow .qd{grid-column:1/-1}
+.qrow:has(.qx) .qd{grid-column:1/3}
+.qrow .qx{grid-row:1;grid-column:3;justify-self:end}
+.qrow label span{display:block;font-size:12px;color:var(--muted);margin-bottom:2px}
+.qrow output{align-self:end;padding-bottom:12px}
+nav button{font-size:14px}
+}
 </style>
 </head>
 <body>
@@ -59,6 +101,7 @@ a{color:var(--accent-ink)}
 <button role="tab" id="tab-3d" aria-controls="p-3d" aria-selected="true">3D model</button>
 <button role="tab" id="tab-dr" aria-controls="p-dr" aria-selected="false">Drawings</button>
 <button role="tab" id="tab-fl" aria-controls="p-fl" aria-selected="false">Laser files</button>
+<button role="tab" id="tab-pr" aria-controls="p-pr" aria-selected="false">Prices</button>
 </nav>
 </header>
 <main>
@@ -694,7 +737,76 @@ a{color:var(--accent-ink)}
 <div class="file"><div><strong>P3 · Rim ring ×1</strong><small>336 × 690 · 6 slots, 280 × 574 opening</small></div><a href="./dxf/firebin_P3_rim-ring_x1.dxf" download>Download DXF</a></div>
 </div>
 </section>
+
+<section id="p-pr" role="tabpanel" aria-labelledby="tab-pr" hidden>
+<div class="quote" id="quote">
+
+<div class="card">
+<h3>CUTTING LIST · WHAT TO BUY</h3>
+<p>Same as drawing DRG 03. All mild steel unless noted. Lengths in mm.</p>
+<div class="tw"><table class="cl">
+<thead><tr><th>MARK</th><th>PART</th><th>SECTION</th><th class="n">QTY</th><th class="n">LENGTH</th></tr></thead>
+<tbody>
+<tr><td>①</td><td>Top rail</td><td>Angle 50×50×3</td><td class="n">2</td><td class="n">1200</td></tr>
+<tr><td>②</td><td>Bin bearer</td><td>Angle 50×50×3</td><td class="n">2</td><td class="n">900</td></tr>
+<tr><td>③</td><td>Bin cradle bar</td><td>Angle 50×50×3</td><td class="n">2</td><td class="n">340</td></tr>
+<tr><td>④</td><td>Slat-end trimmer</td><td>Angle 50×50×3</td><td class="n">2</td><td class="n">340</td></tr>
+<tr><td>⑤</td><td>End cross member</td><td>Angle 50×50×3</td><td class="n">2</td><td class="n">900</td></tr>
+<tr><td>⑥</td><td>Leg frame A, legs</td><td>Angle 50×50×3</td><td class="n">2</td><td class="n">1050</td></tr>
+<tr><td>⑦</td><td>Leg frame A, bars</td><td>Angle 50×50×3</td><td class="n">2</td><td class="n">990</td></tr>
+<tr><td>⑧</td><td>Leg frame B, legs</td><td>Angle 50×50×3</td><td class="n">2</td><td class="n">1050</td></tr>
+<tr><td>⑨</td><td>Leg frame B, bars</td><td>Angle 50×50×3</td><td class="n">2</td><td class="n">880</td></tr>
+<tr><td>⑩</td><td>Hinge tab</td><td>Flat 50×6</td><td class="n">2</td><td class="n">80</td></tr>
+<tr><td>⑪</td><td>Notch plate</td><td>Flat 50×6</td><td class="n">2</td><td class="n">450</td></tr>
+<tr><td>⑫</td><td>Slide axle</td><td>Round Ø12</td><td class="n">1</td><td class="n">990</td></tr>
+<tr><td>⑬</td><td>Slat</td><td>Teak 100×25</td><td class="n">11</td><td class="n">1200</td></tr>
+<tr><td>⑭</td><td>V fire bin</td><td>3 mm plate, laser cut</td><td class="n">1</td><td class="n">see DRG 07</td></tr>
+</tbody>
+<tfoot><tr><td></td><td colspan="3">Angle 50×50×3 total</td><td class="n">15.3 m · 3 × 6 m</td></tr></tfoot>
+</table></div>
+</div>
+
+<div class="card">
+<h3>YOUR PRICES</h3>
+<p>Fill in your price for each line and change the quantity if you buy differently. Prices stay saved on this phone. When you're done, tap <strong>Send quote</strong>.</p>
+<label class="qfield">Your name / workshop<input type="text" id="qShop" autocomplete="organization"></label>
+<div id="qLines"></div>
+<div class="qtot"><span>Total <small id="qCount"></small></span><strong id="qSum">$0.00</strong></div>
+</div>
+
+<div class="card">
+<label class="qfield">Notes (lead time, changes to the drawings, anything else)<textarea id="qNotes"></textarea></label>
+<div class="qbtns">
+<button type="button" class="btn primary" id="qSend">Send quote</button>
+<button type="button" class="btn" id="qCopy">Copy as text</button>
+<button type="button" class="btn" id="qClear">Clear prices</button>
+</div>
+<p id="qMsg" aria-live="polite"></p>
+</div>
+
+<div class="card">
+<h3>WEIGHT · FINISHED TABLE</h3>
+<p>Everything fitted: frame, legs, fire bin, teak slats, bolts and paint. Steel at standard section weights.</p>
+<div class="tw"><table class="cl">
+<thead><tr><th>PART</th><th>AMOUNT</th><th class="n">KG</th></tr></thead>
+<tbody>
+<tr><td>Angle 50×50×3 (①–⑨)</td><td>15.3 m × 2.33 kg/m</td><td class="n">35.6</td></tr>
+<tr><td>Flat bar 50×6 (⑩ ⑪)</td><td>1.06 m × 2.36 kg/m</td><td class="n">2.5</td></tr>
+<tr><td>Round bar Ø12 (⑫)</td><td>0.99 m × 0.89 kg/m</td><td class="n">0.9</td></tr>
+<tr><td>V fire bin, 3 mm plate (⑭)</td><td>0.51 m² × 23.6 kg/m²</td><td class="n">12.0</td></tr>
+<tr><td>Teak slats 1200×100×25 (⑬)</td><td>8 full + 6 short = 0.028 m³ × 880 kg/m³</td><td class="n">24.6</td></tr>
+<tr><td>Bolts, nuts, washers, R-clips</td><td>4 × M12, 28 × M8</td><td class="n">1.5</td></tr>
+<tr><td>Paint and weld metal</td><td>allowance</td><td class="n">0.8</td></tr>
+</tbody>
+<tfoot><tr><td colspan="2">Total, ready to use</td><td class="n">≈ 78 kg</td></tr></tfoot>
+</table></div>
+<p style="margin:10px 0 0">Bin lifted out: ≈ 66 kg. Steel frame alone (no slats, no bin): ≈ 41 kg. Teak at 880 kg/m³ is Zimbabwean (Rhodesian) teak. With lighter plantation teak (≈ 650 kg/m³) the table is ≈ 72 kg.</p>
+</div>
+
+</div>
+</section>
 </main>
 <script src="./app.js"></script>
+<script src="./pricing.js"></script>
 </body>
 </html>

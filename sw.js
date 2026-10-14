@@ -1,6 +1,6 @@
-const CACHE = 'firetable-revA-1';
+const CACHE = 'firetable-revA-2';
 const ASSETS = [
-  './', './index.html', './app.js', './manifest.webmanifest', './icon-192.png', './icon-512.png',
+  './', './index.html', './app.js', './pricing.js', './manifest.webmanifest', './icon-192.png', './icon-512.png',
   './dxf/firebin_ALL-PARTS_3mm.dxf', './dxf/firebin_P1_V-body_x1.dxf',
   './dxf/firebin_P2_end-plate_x2.dxf', './dxf/firebin_P3_rim-ring_x1.dxf'
 ];

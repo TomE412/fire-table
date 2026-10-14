@@ -10,98 +10,110 @@ const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a
 
 const state = { mode: 'table', h: 750, yaw: -35, pitch: 26, zoom: 1, slats: false, labels: true };
 
-/* ---------- model ---------- */
+/* ---------- model (Rev B: 40×40×3 angle, 20 mm slats, 2 mm bin, square cuts) ---------- */
 function buildModel(s) {
   const folded = s.h === 'fold';
   const H = folded ? 160 : s.h;
-  const Zt = H - 25, zh = Zt - 75, L = 1000;
-  const d = Math.sqrt(L * L - zh * zh);
+  // Legs: 1000 from hinge/axle hole to foot along the centre line. The foot's lower corner is 20 below that line,
+  // so solve for the hinge height that puts the corner on the floor, then lift the whole model by g.
+  const L = 1000;
+  let zh = H - 75;
+  for (let i = 0; i < 8; i++) zh = H - 75 - 20 * Math.sqrt(L * L - zh * zh) / L;
+  const d = Math.sqrt(L * L - zh * zh), g = 20 * d / L;
+  const Zt = zh + 55; // top of steel (slats 20 on top); hinge hole 55 below it
+  const A = 40, th = 3;
   const boxes = [], polys = [], labels = [];
   const box = (o, u, v, w, c) => boxes.push({ o, u, v, w, c });
-  const ang = (o, ax, len, f1, f2, c) => { const u = mul(ax, len); box(o, u, mul(f1, 50), mul(f2, 3), c); box(o, u, mul(f1, 3), mul(f2, 50), c); };
+  const ang = (o, ax, len, f1, f2, c) => { const u = mul(ax, len); box(o, u, mul(f1, A), mul(f2, th), c); box(o, u, mul(f1, th), mul(f2, A), c); };
   const poly = (pts, n, c, ds, dp) => polys.push({ pts, n, c, ds, dp });
   const lab = (p, t) => labels.push({ p, t });
   const X = [1, 0, 0], Y = [0, 1, 0], nX = [-1, 0, 0], nY = [0, -1, 0], nZ = [0, 0, -1];
   const showFrame = s.mode !== 'bin';
   const showBin = s.mode !== 'frame' && !(folded && s.mode === 'table');
-  const zr = Zt - 30; // underside of rim ring = top of cradle bars
+  const zr = Zt - 10; // top of bin supports E = underside of rim ring
 
   if (showFrame) {
     const T = COL.TOP, O = COL.ORG;
-    ang([0, 100, Zt], X, 1200, Y, nZ, T); ang([0, 1100, Zt], X, 1200, nY, nZ, T);
-    ang([0, 150, Zt], Y, 900, X, nZ, T); ang([1200, 150, Zt], Y, 900, nX, nZ, T);
-    ang([380, 150, Zt], Y, 900, X, nZ, T); ang([820, 150, Zt], Y, 900, nX, nZ, T);
-    ang([430, 190, Zt], X, 340, Y, nZ, T); ang([430, 1010, Zt], X, 340, nY, nZ, T);
-    ang([430, 250, Zt - 30], X, 340, Y, nZ, O); ang([430, 950, Zt - 30], X, 340, nY, nZ, O);
-    box([125, 103, Zt - 20], [50, 0, 0], [0, 6, 0], [0, 0, -80], O); box([125, 1091, Zt - 20], [50, 0, 0], [0, 6, 0], [0, 0, -80], O);
-    box([700, 103, Zt - 26], [450, 0, 0], [0, 6, 0], [0, 0, -50], O); box([700, 1091, Zt - 26], [450, 0, 0], [0, 6, 0], [0, 0, -50], O);
+    // A side rails (upright side inside), B ends (upright side outside), C bearers (upright side toward bin)
+    ang([0, 140, Zt], X, 1200, nY, nZ, T); ang([0, 1060, Zt], X, 1200, Y, nZ, T);
+    ang([0, 140, Zt], Y, 920, X, nZ, T); ang([1200, 140, Zt], Y, 920, nX, nZ, T);
+    ang([430, 140, Zt], Y, 920, nX, nZ, T); ang([770, 140, Zt], Y, 920, X, nZ, T);
+    // D slat supports (flush), E bin supports (10 down)
+    ang([430, 205, Zt], X, 340, Y, nZ, T); ang([430, 995, Zt], X, 340, nY, nZ, T);
+    ang([430, 255, zr], X, 340, Y, nZ, O); ang([430, 945, zr], X, 340, nY, nZ, O);
+    // J hinge plates (top level with rail top), K notch plates (top 15 below rail top); flat 50×6 inside the rails
+    box([125, 140, Zt], [50, 0, 0], [0, 6, 0], [0, 0, -80], O); box([125, 1054, Zt], [50, 0, 0], [0, 6, 0], [0, 0, -80], O);
+    box([820, 140, Zt - 15], [330, 0, 0], [0, 6, 0], [0, 0, -50], O); box([820, 1054, Zt - 15], [330, 0, 0], [0, 6, 0], [0, 0, -50], O);
+    // Frame A (outer, hinged): uprights on the inner edges, flat sides outward
     const a = [d / L, 0, -zh / L], nA = [zh / L, 0, d / L];
-    const SA = add([150, 0, zh], mul(a, -25)), EA = add(SA, mul(a, 1050));
-    ang([SA[0], 155, SA[2]], a, 1050, nY, nA, COL.LA); ang([SA[0], 1045, SA[2]], a, 1050, Y, nA, COL.LA);
-    ang([SA[0], 105, SA[2]], Y, 990, a, nA, COL.LA); ang([EA[0], 105, EA[2]], Y, 990, mul(a, -1), nA, COL.LA);
+    const HA = [150, 0, zh];
+    const at = (p, y, s2, n) => [p[0] + a[0] * s2 + nA[0] * n, y, p[2] + a[2] * s2 + nA[2] * n];
+    ang(at(HA, 188, -25, -20), a, 1025, nA, nY, COL.LA); ang(at(HA, 1012, -25, -20), a, 1025, nA, Y, COL.LA);
+    ang(at(HA, 188, 35, -20), Y, 824, a, nA, COL.LA); ang(at(HA, 188, 1000, -20), Y, 824, mul(a, -1), nA, COL.LA);
+    // Frame B (inner, slides): uprights on the outer edges, flat sides inward, bars sit on the flat sides
     const b = [-d / L, 0, -zh / L], nB = [-zh / L, 0, d / L];
     const Tp = [150 + d, 0, zh];
-    const SB = add(Tp, mul(b, -25)), EB = add(SB, mul(b, 1050));
-    ang([SB[0], 160, SB[2]], b, 1050, Y, nB, COL.LB); ang([SB[0], 1040, SB[2]], b, 1050, nY, nB, COL.LB);
-    ang([SB[0], 160, SB[2]], Y, 880, b, nB, COL.LB); ang([EB[0], 160, EB[2]], Y, 880, mul(b, -1), nB, COL.LB);
-    box([Tp[0] - 6, 105, zh - 6], [12, 0, 0], [0, 990, 0], [0, 0, 12], O);
+    const bt = (p, y, s2, n) => [p[0] + b[0] * s2 + nB[0] * n, y, p[2] + b[2] * s2 + nB[2] * n];
+    ang(bt(Tp, 190, -25, -20), b, 1025, nB, Y, COL.LB); ang(bt(Tp, 1010, -25, -20), b, 1025, nB, nY, COL.LB);
+    ang(bt(Tp, 193, 35, -17), Y, 814, b, nB, COL.LB); ang(bt(Tp, 193, 1000, -17), Y, 814, mul(b, -1), nB, COL.LB);
+    // L axle through frame B top holes, ends resting in the notch plates
+    box([Tp[0] - 6, 141, zh - 6], [12, 0, 0], [0, 918, 0], [0, 0, 12], O);
+    // hinge bolts + M spacers, pivot bolts
+    for (const [y0, y1] of [[140, 190], [1010, 1060]]) box([150 - 8, y0, zh - 8], [16, 0, 0], [0, y1 - y0, 0], [0, 0, 16], O);
     const P = [150 + d / 2, 0, zh / 2];
-    box([P[0] - 8, 140, P[2] - 8], [16, 0, 0], [0, 35, 0], [0, 0, 16], O);
-    box([P[0] - 8, 1025, P[2] - 8], [16, 0, 0], [0, 35, 0], [0, 0, 16], O);
+    box([P[0] - 8, 175, P[2] - 8], [16, 0, 0], [0, 30, 0], [0, 0, 16], O);
+    box([P[0] - 8, 995, P[2] - 8], [16, 0, 0], [0, 30, 0], [0, 0, 16], O);
     if (s.slats) {
       for (let i = 0; i < 11; i++) {
         const x = 110 * i;
-        if (i >= 4 && i <= 6) { box([x, 0, Zt], [100, 0, 0], [0, 260, 0], [0, 0, 25], COL.WOOD); box([x, 940, Zt], [100, 0, 0], [0, 260, 0], [0, 0, 25], COL.WOOD); }
-        else box([x, 0, Zt], [100, 0, 0], [0, 1200, 0], [0, 0, 25], COL.WOOD);
+        if (i >= 4 && i <= 6) { box([x, 0, Zt], [100, 0, 0], [0, 260, 0], [0, 0, 20], COL.WOOD); box([x, 940, Zt], [100, 0, 0], [0, 260, 0], [0, 0, 20], COL.WOOD); }
+        else box([x, 0, Zt], [100, 0, 0], [0, 1200, 0], [0, 0, 20], COL.WOOD);
       }
     }
-    lab([600, 100, Zt + 10], '① rail'); lab([0, 600, Zt + 10], '⑤ end'); lab([405, 700, Zt + 10], '② bearer');
-    lab([600, 215, Zt + 10], '④ trimmer'); lab([600, 275, Zt - 30], '③ cradle'); lab([150, 100, zh - 40], '⑩ hinge');
-    lab([1100, 100, Zt - 60], '⑪ notch'); lab(add([0, 130, 0], add(SA, mul(a, 330))), '⑥ frame A');
-    lab(add([0, 1050, 0], add(SB, mul(b, 330))), '⑧ frame B'); lab([Tp[0], 1080, zh + 20], '⑫ axle');
+    lab([600, 120, Zt + 10], 'A rail'); lab([20, 600, Zt + 10], 'B end'); lab([410, 700, Zt + 10], 'C bearer');
+    lab([600, 225, Zt + 10], 'D'); lab([600, 275, zr - 20], 'E bin support'); lab([150, 140, zh - 45], 'J hinge');
+    lab([1100, 140, Zt - 70], 'K notch'); lab(add([0, 168, 0], at(HA, 0, 330, 0)), 'Frame A');
+    lab(add([0, 1030, 0], bt(Tp, 0, 330, 0)), 'Frame B'); lab([Tp[0], 1080, zh + 25], 'L axle');
     lab([P[0], 1040, P[2] - 30], 'pivot');
   }
 
   if (showBin) {
-    const ap = zr - 250; // apex (inside)
-    // rim ring P3: 4 strips around opening X460-740, Y313-887; outer X432-768, Y255-945
-    box([432, 255, zr], [336, 0, 0], [0, 58, 0], [0, 0, 3], COL.RING);
-    box([432, 887, zr], [336, 0, 0], [0, 58, 0], [0, 0, 3], COL.RING);
-    box([432, 313, zr], [28, 0, 0], [0, 574, 0], [0, 0, 3], COL.RING);
-    box([740, 313, zr], [28, 0, 0], [0, 574, 0], [0, 0, 3], COL.RING);
-    // V body P1 (two sides, double-sided plates)
+    const t = 2, ap = zr - 250; // plate thickness, apex (inside)
+    // rim ring P3: opening X460-740, Y313-887; outer X432-768, Y255-945
+    box([432, 255, zr], [336, 0, 0], [0, 58, 0], [0, 0, t], COL.RING);
+    box([432, 887, zr], [336, 0, 0], [0, 58, 0], [0, 0, t], COL.RING);
+    box([432, 313, zr], [28, 0, 0], [0, 574, 0], [0, 0, t], COL.RING);
+    box([740, 313, zr], [28, 0, 0], [0, 574, 0], [0, 0, t], COL.RING);
+    // V body P1
     const Y0 = 303, Y1 = 897;
-    const sides = [[450, -1], [750, 1]];
-    for (const [xr, sg] of sides) {
+    for (const [xr, sg] of [[450, -1], [750, 1]]) {
       const top0 = [xr, Y0, zr], top1 = [xr, Y1, zr], a0 = [600, Y0, ap], a1 = [600, Y1, ap];
       const n = nrm([sg * 250, 0, -150]);
       const panel = [top0, top1, a1, a0];
       poly(panel, n, COL.BODY, true);
-      // top tabs through ring
-      for (const yc of [450, 750]) box([xr - (sg < 0 ? 3.5 : 0), yc - 30, zr], [3.5, 0, 0], [0, 60, 0], [0, 0, 4], COL.BODY);
-      // holes: air at slant 70, drains at slant 15
+      for (const yc of [450, 750]) box([xr - (sg < 0 ? 2.5 : 0), yc - 30, zr], [2.5, 0, 0], [0, 60, 0], [0, 0, 3], COL.BODY);
       const up = nrm([xr - 600, 0, 250]);
       const hole = (sl, y, r) => {
         const c = add([600, y, ap], mul(up, sl));
         for (const side of [1, -1]) {
           const nn = mul(n, side), cc = add(c, mul(nn, 0.8));
           const pts = [];
-          for (let k = 0; k < 8; k++) { const t = (k / 8) * Math.PI * 2; pts.push(add(cc, add(mul([0, 1, 0], r * Math.cos(t)), mul(up, r * Math.sin(t))))); }
+          for (let k = 0; k < 8; k++) { const q = (k / 8) * Math.PI * 2; pts.push(add(cc, add(mul([0, 1, 0], r * Math.cos(q)), mul(up, r * Math.sin(q))))); }
           poly(pts, nn, COL.HOLE, false, panel);
         }
       };
       for (let k = 0; k < 11; k++) hole(70, Y0 + 47 + 50 * k, 6);
       for (const y of [Y0 + 97, Y0 + 497]) hole(15, y, 5);
     }
-    // end plates P2 at Y300-303 and Y897-900
+    // end plates P2 at Y301-303 and Y897-899
     const xl = 173.3, xc = 5.3;
-    for (const [yp, sg] of [[301.5, -1], [898.5, 1]]) {
-      const P = (x, z) => [600 + x, yp, zr + z];
-      const plate = [P(-xl, 0), P(xl, 0), P(xc, -280), P(-xc, -280)];
+    for (const [yp, sg] of [[302, -1], [898, 1]]) {
+      const Pp = (x, z) => [600 + x, yp, zr + z];
+      const plate = [Pp(-xl, 0), Pp(xl, 0), Pp(xc, -280), Pp(-xc, -280)];
       poly(plate, [0, sg, 0], COL.END, true);
-      box([570, yp - 1.5, zr], [60, 0, 0], [0, 3, 0], [0, 0, 4], COL.END); // top tab
+      box([570, yp - 1, zr], [60, 0, 0], [0, 2, 0], [0, 0, 3], COL.END); // top tab
       for (const side of [1, -1]) {
-        const off = side * 2.2;
+        const off = side * 1.6;
         const Q = (x, z) => [600 + x, yp + off, zr + z];
         poly([Q(-40, -20), Q(40, -20), Q(40, -44), Q(-40, -44)], [0, side, 0], COL.HOLE, false, plate);
       }
@@ -109,9 +121,12 @@ function buildModel(s) {
     if (s.mode === 'bin') {
       lab([600, 255, zr + 20], 'P3 rim ring'); lab([600, 600, ap - 30], 'P1 V body');
       lab([600, 900, zr - 120], 'P2 end plate'); lab([600, 300, zr - 32], 'hand slot');
-    } else lab([600, 600, ap - 30], '⑭ V-bin');
+    } else lab([600, 600, ap - 30], 'fire bin');
   }
-  return { boxes, polys, labels, H, Zt, zh, d, zr, folded };
+  for (const bx of boxes) bx.o = [bx.o[0], bx.o[1], bx.o[2] + g];
+  for (const p of polys) { p.pts = p.pts.map((q) => [q[0], q[1], q[2] + g]); if (p.dp) p.dp = p.dp.map((q) => [q[0], q[1], q[2] + g]); }
+  for (const l of labels) l.p = [l.p[0], l.p[1], l.p[2] + g];
+  return { boxes, polys, labels, H, Zt: Zt + g, zh: zh + g, d, zr: zr + g, folded };
 }
 
 /* ---------- render ---------- */
@@ -195,8 +210,8 @@ function draw() {
     info.innerHTML = m.folded
       ? 'Folded: about 160 mm thick. <strong>Lift the bin out first</strong> — it would hang ~' + Math.round(-(apexAbove)) + ' mm below.'
       : binOnly
-        ? 'Bin 300 wide · 600 long · 250 deep · 3 mm plate · tab &amp; slot'
-        : 'Height <strong>' + m.H + '</strong> · slide axle <strong>' + Math.round(m.d) + '</strong> from hinge · bin bottom <strong>' + apexAbove + '</strong> above ground';
+        ? 'Bin 300 wide · 600 long · 250 deep · 2 mm plate · tab &amp; slot'
+        : 'Height <strong>' + m.H + '</strong> · axle sits <strong>≈ ' + Math.round(m.d) + '</strong> from the hinge · bin bottom <strong>' + apexAbove + '</strong> above the floor';
   }
 }
 

@@ -1,8 +1,8 @@
-const CACHE = 'firetable-revA-2';
+const CACHE = 'firetable-revB-1';
 const ASSETS = [
-  './', './index.html', './app.js', './pricing.js', './manifest.webmanifest', './icon-192.png', './icon-512.png',
-  './dxf/firebin_ALL-PARTS_3mm.dxf', './dxf/firebin_P1_V-body_x1.dxf',
-  './dxf/firebin_P2_end-plate_x2.dxf', './dxf/firebin_P3_rim-ring_x1.dxf'
+  './', './index.html', './app.js', './pricing.js', './guide.js', './manifest.webmanifest', './icon-192.png', './icon-512.png',
+  './dxf/firebin_ALL-PARTS_2mm.dxf', './dxf/firebin_P1_V-body_x1_2mm.dxf',
+  './dxf/firebin_P2_end-plate_x2_2mm.dxf', './dxf/firebin_P3_rim-ring_x1_2mm.dxf'
 ];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));

@@ -1,19 +1,20 @@
 /* Prices tab: the shop fills in qty and unit price, totals add up, saved on this device, sent back as text. */
 (() => {
-  const KEY = 'firetable-quote-revA';
+  const KEY = 'firetable-quote-revB';
   const ITEMS = [
-    { id: 'angle', g: 'Steel', d: 'Angle 50×50×3, 6 m length', n: 'Parts ①–⑨ · 15.3 m needed · nests in 3 lengths (DRG 03)', q: 3 },
-    { id: 'flat', g: 'Steel', d: 'Flat bar 50×6', n: 'Parts ⑩ ⑪ · 1.1 m needed', q: 1 },
-    { id: 'round', g: 'Steel', d: 'Round bar Ø12', n: 'Part ⑫ · 1.0 m needed', q: 1 },
-    { id: 'plate', g: 'Steel', d: 'MS plate 3 mm for fire bin', n: 'Part ⑭ · ≈ 0.52 m² · nest fits 1400 × 750', q: 1 },
+    { id: 'angle', g: 'Steel', d: 'Angle 40×40×3, 6 m length', n: 'Pieces A–H · 14.8 m needed · 3 lengths (Build guide step 2)', q: 3 },
+    { id: 'flat', g: 'Steel', d: 'Flat bar 50×6', n: 'Pieces J, K · 0.82 m needed', q: 1 },
+    { id: 'round', g: 'Steel', d: 'Round bar 12', n: 'Axle L · 0.92 m needed', q: 1 },
+    { id: 'pipe', g: 'Steel', d: 'Steel pipe ½ inch, offcut', n: 'Spacers M · 2 × 38 long', q: 1 },
+    { id: 'plate', g: 'Steel', d: 'MS plate 2 mm for fire bin', n: '≈ 0.52 m² · nest fits 1400 × 750', q: 1 },
     { id: 'laser', g: 'Steel', d: 'Laser cut + bend fire bin parts', n: 'P1 ×1, P2 ×2, P3 ×1 · DXF files in Laser files tab', q: 1 },
-    { id: 'm12', g: 'Hardware', d: 'M12×60 bolt, nyloc, 2 washers', n: '2 hinge, 2 centre pivot · plus 2 thick washers', q: 4 },
-    { id: 'm8', g: 'Hardware', d: 'M8×65 cup-head bolt, nyloc, washer', n: 'Slats to frame', q: 28 },
-    { id: 'rclip', g: 'Hardware', d: 'R-clip 4 mm', n: 'Axle lock', q: 2 },
-    { id: 'paint', g: 'Finish & labour', d: 'Paint: zinc primer, enamel, high-temp spray', n: 'High-temp on cradle ③ and the bin', q: 1 },
-    { id: 'cons', g: 'Finish & labour', d: 'Consumables: wire, gas, discs', n: '', q: 1 },
-    { id: 'labour', g: 'Finish & labour', d: 'Labour: cut, weld, drill, paint', n: 'DRG 03 / 04', q: 1 },
-    { id: 'teak', g: 'Timber (only if you supply it)', d: 'Teak slat 1200 × 100 × 25', n: 'Part ⑬ · 3 of the 11 are cut to 2 × 260', q: 11 },
+    { id: 'm12l', g: 'Hardware', d: 'M12×70 bolt, nyloc, 2 washers', n: 'Hinges', q: 2 },
+    { id: 'm12s', g: 'Hardware', d: 'M12×40 bolt, nyloc, 2 washers + thick washer', n: 'Middle pivots', q: 2 },
+    { id: 'm8', g: 'Hardware', d: 'M8×45 cup-head bolt, nyloc, washer', n: 'Slats to frame', q: 28 },
+    { id: 'paint', g: 'Finish & labour', d: 'Paint: zinc primer, enamel, high-temp spray', n: 'High-temp on bin supports E and the bin', q: 1 },
+    { id: 'cons', g: 'Finish & labour', d: 'Consumables: rods/wire, gas, discs', n: '', q: 1 },
+    { id: 'labour', g: 'Finish & labour', d: 'Labour: cut, drill, weld, paint, assemble', n: 'Build guide steps 2–12', q: 1 },
+    { id: 'teak', g: 'Timber (only if you supply it)', d: 'Teak plank 1200 × 100 × 20', n: '3 of the 11 are cut to 2 × 260', q: 11 },
   ];
 
   const root = document.getElementById('quote');
@@ -72,7 +73,7 @@ ${custom ? `<button type="button" class="qx" data-del="${key}" aria-label="Remov
   }
 
   function text() {
-    const L = ['Fire Pit Table Rev A, quote' + (st.shop ? ' from ' + st.shop : ''), ''];
+    const L = ['Fire Pit Table Rev B, quote' + (st.shop ? ' from ' + st.shop : ''), ''];
     let sum = 0;
     const line = (d, r) => {
       const has = String(r.p).trim() !== '';
